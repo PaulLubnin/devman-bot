@@ -16,10 +16,11 @@ def get_a_list_of_jobs(auth_token):
     return response.json()
 
 
-def long_polling(auth_token):
-    """Функция делает запросы с таймаутом."""
+def long_polling(auth_token, timestamp=None):
+    """Функция делает запросы для получения списка проверок."""
     url = f'{API_DEVMAN_URL}/long_polling/'
-    response = requests.get(url, headers=auth_token, timeout=90)
+    payload = {'timestamp': timestamp}
+    response = requests.get(url, headers=auth_token, params=payload)
     response.raise_for_status()
     return response.json()
 
@@ -33,9 +34,10 @@ def main():
 
     while True:
         try:
-            polling = long_polling(token)
-            for elem in polling.items():
-                pprint(elem)
+            jobs_check_list = long_polling(token)
+            if jobs_check_list.get('status') == 'timeout':
+                jobs_check_list = long_polling(token, jobs_check_list.get('timestamp_to_request'))
+                pprint(jobs_check_list)
         except requests.ReadTimeout:
             print('Проверенных работ нету.')
         except requests.ConnectionError:

@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 API_DEVMAN_URL = 'https://dvmn.org/api'
 
 
-def long_polling(auth_token, timestamp=None):
+def get_server_response(auth_token, timestamp=None):
     """Функция делает запросы для получения списка проверок."""
     url = f'{API_DEVMAN_URL}/long_polling/'
     payload = {'timestamp': timestamp}
@@ -19,6 +19,7 @@ def long_polling(auth_token, timestamp=None):
 
 def main():
     """Запуск скрипта."""
+    load_dotenv()
     devman_token = {'Authorization': f'Token {os.getenv("API_DEVMAN_TOKEN", None)}'}
     bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
     chat_id = os.getenv('TELEGRAM_CHAT_ID')
@@ -26,23 +27,23 @@ def main():
 
     while True:
         try:
-            jobs_check_list = long_polling(devman_token)
+            jobs_check_list = get_server_response(devman_token)
             if jobs_check_list.get('status') == 'timeout':
-                long_polling(devman_token, jobs_check_list.get('timestamp_to_request'))
+                continue
             if jobs_check_list.get('status') == 'found':
-                bot.send_message(chat_id, f'У Вас проверили работу "{jobs_check_list.get("new_attempts")[0]["lesson_title"]}"\n'
-                                          f'{jobs_check_list.get("new_attempts")[0]["lesson_url"]}')
-                if not jobs_check_list.get('new_attempts')[0]['is_negative']:
+                result = jobs_check_list.get('new_attempts')[0]
+                bot.send_message(chat_id, f'У Вас проверили работу "{result["lesson_title"]}"\n'
+                                          f'{result["lesson_url"]}')
+                if not result['is_negative']:
                     bot.send_message(chat_id, 'Преподавателю всё понравилось, можно приступать к следующему уроку!')
-                if jobs_check_list.get('new_attempts')[0]['is_negative']:
+                if result['is_negative']:
                     bot.send_message(chat_id, 'К сожалению в работе нашилсь ошибки.')
         except requests.ReadTimeout:
-            print('Проверенных работ нету.')
+            continue
         except requests.ConnectionError:
             print('Неполадки с интернетом. Восстановление соединения...')
             time.sleep(30)
 
 
 if __name__ == '__main__':
-    load_dotenv()
     main()

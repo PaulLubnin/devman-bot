@@ -6,7 +6,7 @@
 
 Склонируйте проект:
 ```
-https://github.com/PaulLubnin/books_library_restyle.git
+https://github.com/PaulLubnin/devman-bot.git
 ```
 В папке с проектом создайте отдельную среду для установки всех зависимостей, затем активируйте её:
 

@@ -6,6 +6,9 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
+logging.basicConfig(level=logging.DEBUG)
+logging.info('Bot started.')
+
 API_DEVMAN_URL = 'https://dvmn.org/api'
 
 

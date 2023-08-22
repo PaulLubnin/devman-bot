@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 
@@ -46,6 +47,8 @@ def main():
         except requests.ConnectionError:
             print('Неполадки с интернетом. Восстановление соединения...')
             time.sleep(30)
+        except Exception as error:
+            logging.exception(error)
 
 
 if __name__ == '__main__':

@@ -6,6 +6,8 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
+logging.getLogger('terminal-logs')
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('devman-bot')
 logger.setLevel(logging.INFO)
 
@@ -67,6 +69,7 @@ def main():
             time.sleep(30)
         except Exception as error:
             logger.exception(f'Бот упал с ошибкой:\n{error}')
+            time.sleep(1800)
 
 
 if __name__ == '__main__':

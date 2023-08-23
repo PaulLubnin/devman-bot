@@ -6,10 +6,7 @@ import requests
 import telegram
 from dotenv import load_dotenv
 
-logging.getLogger('terminal-logs')
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('devman-bot')
-logger.setLevel(logging.INFO)
+logging.getLogger('server-logs')
 
 API_DEVMAN_URL = 'https://dvmn.org/api'
 
@@ -39,6 +36,9 @@ def get_server_response(auth_token=None, timestamp=None):
 
 def main():
     """Запуск скрипта."""
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger('telegram-logs')
+    logger.setLevel(logging.INFO)
     load_dotenv()
     devman_token = os.getenv('API_DEVMAN_TOKEN')
     bot_token = os.getenv('TELEGRAM_BOT_TOKEN')
